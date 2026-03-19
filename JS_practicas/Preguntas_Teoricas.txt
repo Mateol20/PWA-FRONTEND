@@ -16,7 +16,7 @@ Preguntas Teóricas
  En cuanto a hoisting el const y el let funcionan de maneras similares el compilador solo las cargara cuando llegue a la linea
  de codigo donde fueron declaradas. El var en cambio funciona diferente el compilador siempre las carga de antemano con undefined
  lo cual las hace accesible desde el inicio del codigo.
-
+ 
 ¿Qué pasa si intentás usar una variable declarada con let antes de su declaración? ¿Y con var?
  -let no permite la ejecucion de variables ya que se compilan al llegar a la linea y var las declara undefined de arranque.
 ¿Qué significa que JavaScript sea un lenguaje de tipado dinámico?
