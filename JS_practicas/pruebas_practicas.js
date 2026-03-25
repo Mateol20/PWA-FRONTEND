@@ -64,3 +64,27 @@ if(hijos==="si"){
     }
     resta = sueldo * 1.15
 sueldoFinal = sueldoFinal - resta;
+
+6. Clasificador de clientes premium
+Pedile al usuario:
+
+Cantidad de compras que hizo este mes
+Monto total gastado
+Condiciones:
+
+Es cliente "Premium" si hizo más de 10 compras y gastó más de $100.000
+Es "Regular" si hizo al menos 5 compras o gastó más de $50.000
+En otro caso, es "Básico"
+Mostrá un mensaje como: Cliente Premium: gracias por tu fidelidad!!
+
+const montoTotal = prompt("Cuanto gasto este mes:")
+const cantCompras = prompt("Cuantas compras hizo este mes: ")
+let condicionCliente = ""
+if (cantCompras > 10 && montoTotal > 100000){
+    condicionCliente = "Premium"
+}else if (cantCompras > 5 && montoTotal > 50000) {
+    condicionCliente = "Regular"
+}else{
+    condicionCliente = "Basico"
+}
+console.log(`Cliente .${condicionCliente}.: gracias por tu fidelidad!`)
