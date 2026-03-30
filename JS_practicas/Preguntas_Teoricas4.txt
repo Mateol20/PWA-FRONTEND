@@ -1,0 +1,88 @@
+¿Qué es un array en JavaScript y cómo se declara?
+-Un array es una coleccion de objetos o variables, se declara con []
+
+¿Cómo accedés al tercer elemento de un array?
+-Indicando el indice 2, ya que los array cuentan desde la posicion 0
+¿Qué métodos de array son los más comunes en JavaScript? Explicá para qué sirve cada uno y cómo podrías usarlos para recorrer, agregar o quitar elementos.
+- .push y .pop : Para agregar un elemnto al final y para quitar el ultimo elemento
+- .shift y .unshift : Lo mismo pero con el primer elemento
+- .forEach() : para recorrer el arreglo
+- .sort(): Para ordernar un arreglo
+
+¿Qué método usarías para eliminar el último elemento de un array? ¿Y el primero?
+- .pop elimina el ultimo y .unshift el primero
+
+¿Qué pasa si accedés a una posición inexistente en un array?
+-Nos devuelve un undefined
+
+¿Cómo verificás si un valor está presente en un array o en un Set?
+- Existe indexOf() para buscar un elemento en particular
+
+¿Qué es un Set? ¿En qué casos conviene usarlo en lugar de un array?
+- Un set es una coleccion de valores unicos, conviene en caso donde almacenamos valores que no se repiten por ejemplo IDs unicas
+¿Qué es un Map y qué lo diferencia de un objeto ?
+- Los maps son coleccion donde se asocia un valor a una "llave", tienen muchas diferencias pero para mi la mas importantes es que el map es iterable y los objetos por defecto no lo son
+
+¿Cómo recorrerías un array con un bucle? Mostrá al menos dos formas diferentes.
+- Se puede usar los bucles : for, while y do while o usar el forEach(0)
+
+¿Qué es un objeto en JavaScript y cómo se declara?
+- Un objeto es una asociasion de propiedades que a su vez son claves con un valor asociado
+- Se pueden definir de dos maneras
+auto = new Object()
+auto.marca = "Ford"
+auto.modelo = "Mustang"
+auto = {
+    marca: "Ford",
+    modelo: "Mustang"
+}
+
+¿Cuál es la diferencia entre acceder a una propiedad con . y con []?
+- El . no permite numeros ni espacio es mas estricto con la busqueda
+- el [] permite una busqueda mas flexible ya que admite espacios y numeros
+
+¿Qué sucede si intentás acceder a una propiedad que no existe en un objeto?
+- Se devuelve undefined
+
+¿Cómo agregás, modificás y eliminás propiedades en un objeto?
+- Para agregar simplemente objeto.nuevaPropiedad = valor
+- Para modificar lo mismo objeto.nuevaPropiedad = nuevloValor
+- Para eliminar delete objeto.nuevaPropiedad
+
+¿Qué es un objeto anidado? Mostrá un ejemplo.
+- Son objetos que contienen otro objeto
+const usuario = {
+  id: 1,
+  nombre: "Gabi",
+  contacto: { <---------Nuevo obj
+    email: "gabi@ejemplo.com",
+    redes: {
+      github: "@gabi_dev",
+      twitter: "@gabi_code"
+    }
+  },
+  ubicacion: {
+    ciudad: "Buenos Aires",
+    pais: "Argentina"
+  }
+};
+
+¿Cómo se recorren las propiedades de un objeto? ¿Para qué sirve for...in?
+- for in sirve para iterar sobre las propieades de un objeto
+
+¿Qué devuelven Object.keys(), Object.values() y Object.entries()?
+- Object.keys() devuelve los nombres de las propiedades de un objeto
+- Object.values() devuelve el valor de las propiedades
+- Object.entries() devuele un array de arrays [llave, valor]
+
+¿Qué diferencia hay entre un array y un objeto en cuanto a estructura y uso?
+¿Qué es la desestructuración de objetos y para qué sirve?
+- Es la extraccion de las propiedades de un objeto todas a la vez o las que necesites
+¿Cómo se usan los operadores spread (...) y rest (...) con objetos?
+- spread permite copiar y se usa:
+const usuario = { nombre: "Gabi", edad: 20 };
+const usuarioConEmail = { ...usuario, email: "gabi@mail.com" }; indicando con ...nombre del objeto
+-rest agrupa lo que sobra
+const [primero, ...elResto] = ["🥇", "🥈", "🥉", "🏅"];
+console.log(primero);  // "🥇"
+console.log(elResto); // ["🥈", "🥉", "🏅"] (Agrupó lo que sobró)

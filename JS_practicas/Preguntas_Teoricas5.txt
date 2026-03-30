@@ -1,0 +1,42 @@
+Preguntas Teóricas
+¿Qué es la programación funcional y cómo se relaciona con los métodos de array en JavaScript?
+- Consiste en formar un codigo con menos cambios dinamicos, se relacionan ya que 
+
+¿Cuál es la diferencia entre .map(), .filter() y .reduce()?
+.map tranformar un arreglo en uno nuevo (aplicandole una operacion)
+.filter filtra y forma un nuevo arreglo segn el parametro que demos
+.reduce combina elementos.
+
+¿Qué es la inmutabilidad y por qué es importante en la programación funcional?
+- La inmutabilidad es que algo no cambie, es imporante ya que en funcional copiamos el original para tener uno nuevo
+
+Cómo funcionan los callbacks en JavaScript? Explicá con un ejemplo.
+- los callbacks son funciones que se ejectuan despues
+function saludar(nombre) {
+    console.log("Hola, " + nombre);
+}
+function procesarEntradaUsuario(callback) {
+    var nombre = "Diego"; // Simulamos que obtenemos un dato
+    callback(nombre);      // ¡Aquí ejecutamos la callback!
+}
+¿Qué es el método .some() y en qué casos se utiliza?
+Se utiliza para filtrar para encontrar 1 CASO especifico
+
+¿Qué es el método .find() y cómo se diferencia de .filter()?
+Busca y devuelve el primer arreglo que cumpla la condicion
+
+¿Cómo se puede combinar .map() con .filter() para transformar y filtrar datos?
+const productos = [
+    { nombre: 'Laptop', precio: 1000, oferta: false },
+    { nombre: 'Teclado', precio: 50, oferta: true },
+    { nombre: 'Mouse', precio: 25, oferta: true }
+];
+
+const nombresEnOferta = productos
+    .filter(p => p.oferta)         // Paso 1: Filtra solo los que están en oferta
+    .map(p => p.nombre);           // Paso 2: Extrae solo el nombre
+
+// Resultado: ["Teclado", "Mouse"]
+¿Qué es la desestructuración de arrays y para qué sirve?
+¿Cómo se puede usar el operador spread (...) con arrays?
+¿Qué es el método .flatMap() y en qué casos es útil?
