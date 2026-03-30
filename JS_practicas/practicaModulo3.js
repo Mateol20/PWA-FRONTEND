@@ -5,7 +5,7 @@ ataque: poder del atacante
 defensa: defensa del rival (se resta al ataque para calcular el resultado)
 critico: booleano que duplica el daño si es true
 Si el resultado es menor a 0, debe devolver 0.
-const calcularDanio = (ataque,defensa,critico)=>{
+const calcularDanoo = (ataque,defensa,critico)=>{
     if (critico === true) {
        ataque = ataque*2
 
@@ -58,7 +58,7 @@ Si el enemigo quedó derrotado (si el daño fue ≥ 50) o sigue en pie.
 // ¡Pikachu usó Impactrueno contra Meowth! Causó 50 de daño.
 // ¡Meowth ha sido derrotado!
 
-const batalla = (atacante, defensor, ataque, poder, defensa, critico) =>{
+const batalla1 = (atacante, defensor, ataque, poder, defensa, critico) =>{
     let resultadoDanio = calcularDanio(poder,defensa,critico)
 
     if (resultadoDanio != 0) {
@@ -71,4 +71,62 @@ const batalla = (atacante, defensor, ataque, poder, defensa, critico) =>{
         console.log(`${defensor} ha sido derrotado`)
     }
 }
-batalla("Pikachu", "Meowth", "Impactrueno", 70, 20, false);
+batalla1("Pikachu", "Meowth", "Impactrueno", 70, 20, false);
+
+Reglas del juego
+Ambos comienzan con 100 puntos de vida.
+Se juegan 5 turnos.
+En cada turno:
+Vos elegís si atacar o defender usando prompt().
+El enemigo elige su acción al azar.
+Cada acción genera valores aleatorios para ataque, defensa y crítico.
+
+const calcularDanio = (ataque,defensa,critico)=>{
+    if (critico === true) {
+       ataque = ataque*2
+
+    }
+    if (ataque > defensa) {
+        let danio = ataque - defensa
+
+        return danio
+    }else{
+        return 0
+    }
+}
+
+ const opciones = ["A","D"]
+const vidaJugador1 = 100
+const vidaJugador2 = 100
+const generarNumero=()=>{
+   let numero1al100 = Math.floor(Math.random() * 100) + 1;
+   return numero1al100
+}
+const generarValoresBatalla = () =>{
+    let generarValorAtq = generarNumero()
+    let generarValorDef = generarNumero()
+    let generarValorCritico = !!Math.floor(Math.random()*2)
+    let arregloBatalla = [generarValorAtq,generarValorDef,generarValorCritico]
+    return arregloBatalla
+}
+    
+for (let index = 1; index < 6; index++) {
+    let accionJugador = prompt("Vas a atacar o defender A/D: ").toUpperCase();
+    let indiceAleatorio = Math.floor(Math.random()*opciones.length);
+    let accionMaquina = opciones[indiceAleatorio];
+    let valoresJugador = generarValoresBatalla();
+    let valoresMaquina = generarValoresBatalla();
+    let resultadoBatalla = calcularDanio(valoresJugador[0],valoresJugador[1],valoresJugador[2]);
+    if (accionJugador == "A" && accionMaquina != "D" && resultadoBatalla > 100) {
+        console.log(`Turno ${index}: Atacaste con ${valoresJugador[0]}. El enemigo fue derrotado. Hiciste ${resultadoBatalla} de daño`)
+    }else if (accionJugador === "A" && accionMaquina === "A" ) {
+        console.log(`Turno ${index}: Atacaste con ${valoresJugador[0]}. El enemigo ataco con ${valoresMaquina[0]}. Hiciste ${resultadoBatalla} de daño`)
+    }else if (accionJugador === "A" && accionMaquina === "D" ) 
+    {
+        resultadoBatalla = resultadoBatalla / 2
+        console.log(resultadoBatalla)
+         console.log(`Turno ${index}: Atacaste con ${valoresJugador[0]}. El enemigo se defendio con ${valoresMaquina[1]}. Hiciste ${resultadoBatalla} de daño`)
+
+    }
+    
+}
