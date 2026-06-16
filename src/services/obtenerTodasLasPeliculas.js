@@ -1,3 +1,4 @@
+import i18n from "../context/i18n.js";
 import { API_BASE_URL, ITEMS_PER_PAGE } from "../config";
 
 const mapearPelicula = (p) => ({
@@ -24,6 +25,9 @@ export const obtenerTodasLasPeliculas = async (pagina = 1, busqueda = "") => {
     if (busqueda?.trim()) {
       url.searchParams.append("search", busqueda.trim());
     }
+
+    const lang = i18n.language || "es";
+    url.searchParams.append("lang", lang);
 
     const respuesta = await fetch(url);
     if (!respuesta.ok) {
