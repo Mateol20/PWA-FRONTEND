@@ -1,4 +1,4 @@
-export const API_BASE_URL = "http://localhost:3000/api/peliculas";
+export const API_BASE_URL = "https://pwa-backend-omega.vercel.app/api/peliculas";
 export const ITEMS_PER_PAGE = 8;
 export const DEBOUNCE_MS = 400;
 export const STORAGE_KEYS = {
