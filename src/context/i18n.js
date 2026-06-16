@@ -19,7 +19,7 @@ i18n
       loadPath: `${baseUrl}/api/translations/{{lng}}`,
     },
     detection: {
-      order: ["navigator"],
+      order: [],
       caches: [],
     },
   });
