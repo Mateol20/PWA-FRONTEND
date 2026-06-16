@@ -13,6 +13,7 @@ i18n
   .use(initReactI18next)
   .init({
     fallbackLng: "es",
+    lng: "es",
     load: "languageOnly",
     backend: {
       loadPath: `${baseUrl}/api/translations/{{lng}}`,
