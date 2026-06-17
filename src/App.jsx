@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { BrowserRouter as Enrutador, Routes, Route } from "react-router-dom";
 import { ProveedorFavoritos } from "./context/ContextoFavoritos";
 import { ProveedorBusqueda } from "./context/ContextoBusqueda";
@@ -12,6 +13,7 @@ function App() {
     <Enrutador>
       <ProveedorBusqueda>
         <ProveedorFavoritos>
+          <Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center"><p className="text-blue-400 animate-pulse">Cargando...</p></div>}>
           <Encabezado />
           <Routes>
             <Route path="/" element={<Inicio />} />
@@ -19,6 +21,7 @@ function App() {
             <Route path="/favoritos" element={<PaginaDeFavoritos />} />
           </Routes>
           <PieDePagina />
+          </Suspense>
         </ProveedorFavoritos>
       </ProveedorBusqueda>
     </Enrutador>
