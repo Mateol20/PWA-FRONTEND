@@ -7,7 +7,7 @@ import FiltrosPelicula from "../../Components/FiltrosPelicula/FiltrosPelicula";
 import { useBusqueda } from "../../context/ContextoBusqueda";
 
 const Inicio = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { termino } = useBusqueda();
   const [peliculas, setPeliculas] = useState([]);
   const [pagina, setPagina] = useState(1);
@@ -17,6 +17,7 @@ const Inicio = () => {
   const [tipo, setTipo] = useState(null);
   const paginaRef = useRef(pagina);
   const terminoRef = useRef(termino);
+  const idiomaRef = useRef(i18n.language);
   const paginasCargadas = useRef(new Set());
 
   const generosUnicos = useMemo(() => {
@@ -44,6 +45,18 @@ const Inicio = () => {
   useEffect(() => {
     paginaRef.current = pagina;
   }, [pagina]);
+
+  useEffect(() => {
+    if (i18n.language !== idiomaRef.current) {
+      setPeliculas([]);
+      setPagina(1);
+      setHayMas(true);
+      setCargando(false);
+      setGenero(null);
+      paginasCargadas.current = new Set();
+      idiomaRef.current = i18n.language;
+    }
+  }, [i18n.language]);
 
   useEffect(() => {
     if (termino !== terminoRef.current) {
