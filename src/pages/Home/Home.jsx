@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import useInfiniteScroll from "react-infinite-scroll-hook";
 import { obtenerTodasLasPeliculas } from "../../services/obtenerTodasLasPeliculas";
 import TarjetaPelicula from "../../Components/TarjetaPelicula/TarjetaPelicula";
+import FiltrosPelicula from "../../Components/FiltrosPelicula/FiltrosPelicula";
 import { useBusqueda } from "../../context/ContextoBusqueda";
 
 const Inicio = () => {
@@ -13,6 +14,7 @@ const Inicio = () => {
   const [hayMas, setHayMas] = useState(true);
   const [cargando, setCargando] = useState(false);
   const [genero, setGenero] = useState(null);
+  const [tipo, setTipo] = useState(null);
   const paginaRef = useRef(pagina);
   const terminoRef = useRef(termino);
   const paginasCargadas = useRef(new Set());
@@ -29,9 +31,15 @@ const Inicio = () => {
   }, [peliculas]);
 
   const peliculasFiltradas = useMemo(() => {
-    if (!genero || genero === "Todas") return peliculas;
-    return peliculas.filter((p) => (p.Genre || "").includes(genero));
-  }, [peliculas, genero]);
+    let filtradas = peliculas;
+    if (tipo) {
+      filtradas = filtradas.filter((p) => p.Type === tipo);
+    }
+    if (genero && genero !== "Todas") {
+      filtradas = filtradas.filter((p) => (p.Genre || "").includes(genero));
+    }
+    return filtradas;
+  }, [peliculas, genero, tipo]);
 
   useEffect(() => {
     paginaRef.current = pagina;
@@ -90,23 +98,13 @@ const Inicio = () => {
         {t("cartelera")}
       </h1>
 
-      {generosUnicos.length > 1 && (
-        <div className="flex flex-wrap gap-2 justify-center max-w-4xl mx-auto px-4 pb-6">
-          {generosUnicos.map((g) => (
-            <button
-              key={g}
-              onClick={() => setGenero(g === "Todas" ? null : g)}
-              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                (genero === null && g === "Todas") || genero === g
-                  ? "bg-blue-600 text-white"
-                  : "bg-slate-800 text-slate-300 hover:bg-slate-700"
-              }`}
-            >
-              {g}
-            </button>
-          ))}
-        </div>
-      )}
+      <FiltrosPelicula
+        genero={genero}
+        setGenero={setGenero}
+        tipo={tipo}
+        setTipo={setTipo}
+        generosUnicos={generosUnicos}
+      />
 
       <TarjetaPelicula datos={peliculasFiltradas} />
       <div className="flex justify-center mt-10" ref={referencia}>
