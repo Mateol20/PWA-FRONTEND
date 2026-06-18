@@ -20,7 +20,7 @@ export default function FiltrosPelicula({ genero, setGenero, tipo, setTipo, gene
           onClick={() => setTipo("movie")}
           className={`px-5 py-1.5 rounded-full text-sm font-medium transition-colors ${
             tipo === "movie"
-              ? "bg-white text-black"
+              ? "bg-emerald-950/30 border border-emerald-500/50 text-emerald-400"
               : "bg-slate-800 text-slate-300 hover:bg-slate-700"
           }`}
         >
@@ -30,7 +30,7 @@ export default function FiltrosPelicula({ genero, setGenero, tipo, setTipo, gene
           onClick={() => setTipo("series")}
           className={`px-5 py-1.5 rounded-full text-sm font-medium transition-colors ${
             tipo === "series"
-              ? "bg-white text-black"
+              ? "bg-red-500/10 border border-red-500/50 text-red-500"
               : "bg-slate-800 text-slate-300 hover:bg-slate-700"
           }`}
         >

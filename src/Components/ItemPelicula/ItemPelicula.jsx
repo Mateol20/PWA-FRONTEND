@@ -55,7 +55,7 @@ export default function ItemPelicula({ pelicula, indice, esFavorito, alternarFav
         <h2 className="text-slate-50 font-bold text-xs sm:text-lg md:text-xl line-clamp-2 leading-tight mb-1 group-hover:text-blue-400 transition-colors">
           <Link to={`/pelicula/${pelicula.imdbID}`}>{pelicula.Title}</Link>
         </h2>
-        <div><Etiqueta tipo={tipoPelicula ? "pelicula" : pelicula.Type} /></div>
+        <div><Etiqueta tipo={tipoPelicula ? "pelicula" : "serie"} /></div>
         <p className="text-slate-400 font-medium text-[11px] sm:text-sm mb-2 sm:mb-4">
           {t("publicadoEn")} <span className="text-slate-300">{pelicula.Year}</span>
         </p>
