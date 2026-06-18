@@ -1,28 +1,28 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useFavoritos } from "../../context/ContextoFavoritos";
 import { obtenerPeliculaPorId } from "../../services/obtenerPeliculaPorId";
 
 export default function DetallePelicula() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { imdbID } = useParams();
   const [pelicula, setPelicula] = useState(null);
   const [cargando, setCargando] = useState(true);
   const { alternarFavorito, esFavorito } = useFavoritos();
 
-  useEffect(() => {
-    const obtenerDetalle = async () => {
-      setCargando(true);
-      const datos = await obtenerPeliculaPorId(imdbID);
-      if (datos) {
-        setPelicula(datos);
-      }
-      setCargando(false);
-    };
-
-    if (imdbID) obtenerDetalle();
+  const cargarDetalle = useCallback(async () => {
+    setCargando(true);
+    const datos = await obtenerPeliculaPorId(imdbID);
+    if (datos) {
+      setPelicula(datos);
+    }
+    setCargando(false);
   }, [imdbID]);
+
+  useEffect(() => {
+    if (imdbID) cargarDetalle();
+  }, [cargarDetalle, i18n.language]);
 
   if (cargando) {
     return (
