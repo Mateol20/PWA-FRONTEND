@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import useInfiniteScroll from "react-infinite-scroll-hook";
 import { obtenerTodasLasPeliculas } from "../../services/obtenerTodasLasPeliculas";
@@ -12,9 +12,26 @@ const Inicio = () => {
   const [pagina, setPagina] = useState(1);
   const [hayMas, setHayMas] = useState(true);
   const [cargando, setCargando] = useState(false);
+  const [genero, setGenero] = useState(null);
   const paginaRef = useRef(pagina);
   const terminoRef = useRef(termino);
   const paginasCargadas = useRef(new Set());
+
+  const generosUnicos = useMemo(() => {
+    const set = new Set();
+    peliculas.forEach((p) => {
+      (p.Genre || "").split(",").forEach((g) => {
+        const limpio = g.trim();
+        if (limpio) set.add(limpio);
+      });
+    });
+    return ["Todas", ...set];
+  }, [peliculas]);
+
+  const peliculasFiltradas = useMemo(() => {
+    if (!genero || genero === "Todas") return peliculas;
+    return peliculas.filter((p) => (p.Genre || "").includes(genero));
+  }, [peliculas, genero]);
 
   useEffect(() => {
     paginaRef.current = pagina;
@@ -26,6 +43,7 @@ const Inicio = () => {
       setPagina(1);
       setHayMas(true);
       setCargando(false);
+      setGenero(null);
       paginasCargadas.current = new Set();
       terminoRef.current = termino;
     }
@@ -71,7 +89,26 @@ const Inicio = () => {
       <h1 className="text-4xl font-bold text-white text-center py-10">
         {t("cartelera")}
       </h1>
-      <TarjetaPelicula datos={peliculas} />
+
+      {generosUnicos.length > 1 && (
+        <div className="flex flex-wrap gap-2 justify-center max-w-4xl mx-auto px-4 pb-6">
+          {generosUnicos.map((g) => (
+            <button
+              key={g}
+              onClick={() => setGenero(g === "Todas" ? null : g)}
+              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                (genero === null && g === "Todas") || genero === g
+                  ? "bg-blue-600 text-white"
+                  : "bg-slate-800 text-slate-300 hover:bg-slate-700"
+              }`}
+            >
+              {g}
+            </button>
+          ))}
+        </div>
+      )}
+
+      <TarjetaPelicula datos={peliculasFiltradas} />
       <div className="flex justify-center mt-10" ref={referencia}>
         {cargando && (
           <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>
