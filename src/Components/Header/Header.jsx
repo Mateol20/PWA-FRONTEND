@@ -58,7 +58,7 @@ const Encabezado = () => {
             type="text"
             value={texto}
             onChange={(e) => setTexto(e.target.value)}
-            className="w-full h-10 border border-slate-600 rounded-lg bg-slate-800 text-slate-200 placeholder-slate-400 px-4 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            className="w-full h-10 border border-slate-600 rounded-lg bg-slate-800 text-slate-200 placeholder-slate-400 px-4 focus:outline-none focus:border-blue-400 focus:ring-[3px] focus:ring-blue-500/20 transition-shadow"
             placeholder={t("buscar")}
           />
         </form>

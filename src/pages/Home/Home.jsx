@@ -93,8 +93,8 @@ const Inicio = () => {
   });
 
   return (
-    <main className="min-h-screen bg-slate-900 pb-10">
-      <h1 className="text-4xl font-bold text-white text-center py-10">
+    <main className="min-h-screen pb-10 bg-gradient-to-b from-slate-900 via-slate-950 to-black">
+      <h1 className="text-5xl font-extrabold text-white px-4 sm:px-6 pt-10 pb-6 max-w-7xl mx-auto">
         {t("cartelera")}
       </h1>
 
