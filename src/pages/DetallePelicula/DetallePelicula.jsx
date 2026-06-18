@@ -70,7 +70,7 @@ export default function DetallePelicula() {
 
         <div className="bg-slate-900 rounded-3xl overflow-hidden shadow-2xl border border-slate-800">
           <div className="md:flex">
-            <div className="md:w-2/5">
+            <div className="md:w-2/5 md:shrink-0">
               <img
                 src={
                   pelicula.Poster !== "N/A"
@@ -78,12 +78,12 @@ export default function DetallePelicula() {
                     : "https://placehold.co/400x600?text=Sin+Poster"
                 }
                 alt={pelicula.Title}
-                className="w-full h-full object-cover min-h-[400px]"
+                className="w-full object-cover aspect-[2/3] md:aspect-auto md:h-full"
                 onError={(e) => { e.target.src = "https://placehold.co/400x600?text=Sin+Poster"; }}
               />
             </div>
 
-            <div className="md:w-3/5 p-8 md:p-10">
+            <div className="p-8 md:p-10 md:w-3/5">
               <div className="flex items-start justify-between gap-4 mb-6">
                 <h1 className="text-3xl font-bold text-slate-100">
                   {pelicula.Title}
@@ -155,10 +155,42 @@ export default function DetallePelicula() {
                       {pelicula.Plot}
                     </p>
                   </div>
+
                 </div>
               </div>
             </div>
           </div>
+
+          {pelicula.Trailer ? (
+            <div className="border-t border-slate-800 p-8 md:p-10">
+              <span className="text-slate-500 font-medium text-sm block mb-4">
+                Trailer
+              </span>
+              <div className="aspect-video rounded-xl overflow-hidden bg-black max-w-3xl mx-auto">
+                <iframe
+                  src={pelicula.Trailer}
+                  className="w-full h-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  title={`Trailer de ${pelicula.Title}`}
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="border-t border-slate-800 p-8 md:p-10 text-center">
+              <a
+                href={`https://www.youtube.com/results?search_query=${encodeURIComponent(pelicula.Title + " official trailer")}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-red-400 hover:text-red-300 transition-colors font-medium"
+              >
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M23.5 6.19a3.02 3.02 0 00-2.12-2.14C19.46 3.5 12 3.5 12 3.5s-7.46 0-9.38.55A3.02 3.02 0 00.5 6.19 31.6 31.6 0 000 12a31.6 31.6 0 00.5 5.81 3.02 3.02 0 002.12 2.14c1.92.55 9.38.55 9.38.55s7.46 0 9.38-.55a3.02 3.02 0 002.12-2.14A31.6 31.6 0 0024 12a31.6 31.6 0 00-.5-5.81zM9.55 15.57V8.43L15.82 12l-6.27 3.57z"/>
+                </svg>
+                Ver trailer en YouTube
+              </a>
+            </div>
+          )}
         </div>
       </div>
     </div>
