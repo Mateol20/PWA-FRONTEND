@@ -1,24 +1,88 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-const clientesMock = [
-  { id: 1, name: "Cy Ganderton", job: "Quality Control Specialist", email: "cy@example.com", rate: "$3,000", isactive: true },
-  { id: 2, name: "Hart Hagerty", job: "Desktop Support Technician", email: "hart@example.com", rate: "$2,500", isactive: false },
-  { id: 3, name: "Brice Swyre", job: "Tax Accountant", email: "brice@example.com", rate: "$2,000", isactive: true },
-];
+import { API_BASE_URL } from "../../config";
+
+const BASE = API_BASE_URL.replace("/api/peliculas", "");
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const [usuarios, setUsuarios] = useState([]);
+  const [cargando, setCargando] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
-  const [editing, setEditing] = useState(null);
+  const [editando, setEditando] = useState(null);
+  const [form, setForm] = useState({ name: "", email: "", password: "", role: "user" });
+  const [error, setError] = useState("");
 
-  const handleOpen = (cliente) => {
-    setEditing(cliente);
+  const cargarUsuarios = useCallback(async () => {
+    try {
+      const res = await fetch(`${BASE}/api/admin/users`);
+      const data = await res.json();
+      setUsuarios(data);
+    } catch (e) {
+      console.error("Error al cargar usuarios", e);
+    } finally {
+      setCargando(false);
+    }
+  }, []);
+
+  useEffect(() => { cargarUsuarios(); }, [cargarUsuarios]);
+
+  const abrirModal = (usuario) => {
+    setEditando(usuario);
+    setForm({
+      name: usuario?.name || "",
+      email: usuario?.email || "",
+      password: "",
+      role: usuario?.role || "user",
+    });
+    setError("");
     setModalOpen(true);
   };
 
-  const cerrarSesion = () => {
-    navigate("/");
+  const guardar = async () => {
+    setError("");
+    if (!form.name || !form.email) {
+      setError("Nombre y email son requeridos");
+      return;
+    }
+    if (!editando && !form.password) {
+      setError("Contraseña requerida para nuevo usuario");
+      return;
+    }
+    try {
+      if (editando) {
+        const payload = { name: form.name, email: form.email, role: form.role };
+        if (form.password) payload.password = form.password;
+        await fetch(`${BASE}/api/admin/users/${editando.Id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+      } else {
+        await fetch(`${BASE}/api/admin/users`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(form),
+        });
+      }
+      setModalOpen(false);
+      cargarUsuarios();
+    } catch (e) {
+      setError("Error al guardar");
+    }
   };
+
+  const eliminar = async (id) => {
+    if (!confirm("¿Eliminar este usuario?")) return;
+    try {
+      await fetch(`${BASE}/api/admin/users/${id}`, { method: "DELETE" });
+      cargarUsuarios();
+    } catch (e) {
+      console.error("Error al eliminar", e);
+    }
+  };
+
+  if (cargando) return <div className="min-h-screen bg-slate-950 flex items-center justify-center"><p className="text-blue-400 animate-pulse">Cargando...</p></div>;
 
   return (
     <div className="min-h-screen bg-slate-950">
@@ -26,12 +90,9 @@ export default function Dashboard() {
         <div className="navbar-start">
           <a className="btn btn-ghost text-xl text-slate-100">Admin Panel</a>
         </div>
-        <div className="navbar-center">
-          <input type="text" placeholder="Search" className="input input-bordered w-48 md:w-auto bg-slate-800 text-slate-200 border-slate-600" />
-        </div>
         <div className="navbar-end gap-2">
-          <button className="btn btn-primary" onClick={() => handleOpen(null)}>Agregar Cliente</button>
-          <button className="btn btn-ghost text-slate-300" onClick={cerrarSesion}>Salir</button>
+          <button className="btn btn-primary" onClick={() => abrirModal(null)}>Agregar Usuario</button>
+          <button className="btn btn-ghost text-slate-300" onClick={() => navigate("/")}>Salir</button>
         </div>
       </div>
 
@@ -39,31 +100,29 @@ export default function Dashboard() {
         <table className="table w-full">
           <thead>
             <tr className="text-slate-400">
-              <th></th>
-              <th>Name</th>
-              <th>Job</th>
+              <th>ID</th>
+              <th>Nombre</th>
               <th>Email</th>
-              <th>Rate</th>
-              <th>Status</th>
+              <th>Rol</th>
+              <th>Creado</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
-            {clientesMock.map((c) => (
-              <tr key={c.id} className="text-slate-200 hover:bg-slate-800">
-                <th className="text-slate-400">{c.id}</th>
-                <td>{c.name}</td>
-                <td>{c.job}</td>
-                <td>{c.email}</td>
-                <td>{c.rate}</td>
+            {usuarios.map((u) => (
+              <tr key={u.Id} className="text-slate-200 hover:bg-slate-800">
+                <th className="text-slate-400">{u.Id}</th>
+                <td>{u.name}</td>
+                <td>{u.email}</td>
                 <td>
-                  <span className={`badge ${c.isactive ? "badge-success" : "badge-ghost"}`}>
-                    {c.isactive ? "Active" : "Inactive"}
+                  <span className={`badge ${u.role === "admin" ? "badge-warning" : "badge-ghost"}`}>
+                    {u.role}
                   </span>
                 </td>
+                <td className="text-slate-400 text-sm">{new Date(u.createdAt).toLocaleDateString()}</td>
                 <td className="flex gap-2">
-                  <button className="btn btn-sm btn-secondary" onClick={() => handleOpen(c)}>Update</button>
-                  <button className="btn btn-sm btn-accent">Delete</button>
+                  <button className="btn btn-sm btn-secondary" onClick={() => abrirModal(u)}>Editar</button>
+                  <button className="btn btn-sm btn-accent" onClick={() => eliminar(u.Id)}>Eliminar</button>
                 </td>
               </tr>
             ))}
@@ -75,32 +134,30 @@ export default function Dashboard() {
         <div className="modal modal-open">
           <div className="modal-box bg-slate-900 border border-slate-700">
             <h3 className="font-bold text-lg text-slate-100 py-3">
-              {editing ? "Editar Cliente" : "Agregar Cliente"}
+              {editando ? "Editar Usuario" : "Agregar Usuario"}
             </h3>
-            <form method="dialog">
-              <label className="input input-bordered my-4 flex items-center gap-2 bg-slate-800 text-slate-200 border-slate-600">
-                Nombre:
-                <input type="text" className="grow" defaultValue={editing?.name || ""} />
+            {error && <p className="text-red-400 text-sm mb-2">{error}</p>}
+            <form method="dialog" className="space-y-3">
+              <label className="input input-bordered flex items-center gap-2 bg-slate-800 text-slate-200 border-slate-600">
+                Nombre
+                <input type="text" className="grow" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
               </label>
-              <label className="input input-bordered my-4 flex items-center gap-2 bg-slate-800 text-slate-200 border-slate-600">
-                Trabajo:
-                <input type="text" className="grow" defaultValue={editing?.job || ""} />
+              <label className="input input-bordered flex items-center gap-2 bg-slate-800 text-slate-200 border-slate-600">
+                Email
+                <input type="email" className="grow" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
               </label>
-              <label className="input input-bordered my-4 flex items-center gap-2 bg-slate-800 text-slate-200 border-slate-600">
-                Email:
-                <input type="text" className="grow" defaultValue={editing?.email || ""} />
+              <label className="input input-bordered flex items-center gap-2 bg-slate-800 text-slate-200 border-slate-600">
+                {editando ? "Nueva contraseña (opcional)" : "Contraseña"}
+                <input type="password" className="grow" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} />
               </label>
-              <div className="flex gap-4 my-4">
-                <input type="number" className="input input-bordered bg-slate-800 text-slate-200 border-slate-600 w-1/2" placeholder="Rate.." />
-                <select className="select select-bordered bg-slate-800 text-slate-200 border-slate-600 w-1/2">
-                  <option>Inactive</option>
-                  <option>Active</option>
-                </select>
-              </div>
+              <select className="select select-bordered bg-slate-800 text-slate-200 border-slate-600 w-full" value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}>
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+              </select>
             </form>
             <div className="modal-action">
-              <button className="btn btn-success" onClick={() => setModalOpen(false)}>
-                {editing ? "Guardar Cambios" : "Agregar Cliente"}
+              <button className="btn btn-success" onClick={guardar}>
+                {editando ? "Guardar Cambios" : "Agregar Usuario"}
               </button>
               <button className="btn btn-ghost text-slate-300" onClick={() => setModalOpen(false)}>Cancelar</button>
             </div>
