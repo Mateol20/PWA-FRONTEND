@@ -12,7 +12,7 @@ vi.mock('react-i18next', () => ({
 
 describe('ItemPelicula', () => {
   const peliculaMock = {
-    imdbID: 'tt12345',
+    Id: 12345,
     Title: 'Película de Prueba',
     Year: '2024',
     Type: 'movie',

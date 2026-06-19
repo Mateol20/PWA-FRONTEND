@@ -27,7 +27,7 @@ describe('TarjetaPelicula', () => {
   it('renderiza correctamente las películas', () => {
     const peliculasMock = [
       {
-        imdbID: 'tt123',
+        Id: 123,
         Title: 'Película de Prueba 1',
         Poster: 'https://foto.com/1.jpg',
         Type: 'movie',
@@ -46,8 +46,8 @@ describe('TarjetaPelicula', () => {
 
   it('renderiza múltiples películas', () => {
     const peliculasMock = [
-      { imdbID: 'tt1', Title: 'Peli 1', Poster: '', Type: 'movie', Year: '2020' },
-      { imdbID: 'tt2', Title: 'Peli 2', Poster: '', Type: 'movie', Year: '2021' },
+      { Id: 1, Title: 'Peli 1', Poster: '', Type: 'movie', Year: '2020' },
+      { Id: 2, Title: 'Peli 2', Poster: '', Type: 'movie', Year: '2021' },
     ];
 
     render(

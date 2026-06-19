@@ -1,7 +1,7 @@
 import { API_BASE_URL, imagenUrl } from "../config";
 
 const mapearPelicula = (p) => ({
-  imdbID: String(p.Id),
+  Id: p.Id,
   Title: p.Title,
   Year: p.Year,
   Poster: imagenUrl(p.Poster),
@@ -39,7 +39,7 @@ export const obtenerFavoritosAPI = async () => {
 export const toggleFavoritoAPI = async (pelicula) => {
   try {
     const url = new URL(API_BASE_URL);
-    url.pathname += `/${pelicula.imdbID}/favorito`;
+    url.pathname += `/${pelicula.Id}/favorito`;
 
     const respuesta = await fetch(url, {
       method: "PATCH",

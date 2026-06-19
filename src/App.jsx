@@ -17,7 +17,7 @@ function App() {
           <Encabezado />
           <Routes>
             <Route path="/" element={<Inicio />} />
-            <Route path="/pelicula/:imdbID" element={<DetallePelicula />} />
+            <Route path="/pelicula/:id" element={<DetallePelicula />} />
             <Route path="/favoritos" element={<PaginaDeFavoritos />} />
           </Routes>
           <PieDePagina />

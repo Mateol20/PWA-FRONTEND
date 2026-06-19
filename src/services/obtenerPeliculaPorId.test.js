@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { obtenerPeliculaPorId } from './obtenerPeliculaPorId';
-import { API_BASE_URL } from '../config';
+import { API_BASE_URL, imagenUrl } from '../config';
 
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
@@ -18,7 +18,8 @@ describe('obtenerPeliculaPorId', () => {
 
     await obtenerPeliculaPorId('1');
 
-    expect(mockFetch.mock.calls[0][0]).toBe(`${API_BASE_URL}/1`);
+    const url = new URL(mockFetch.mock.calls[0][0]);
+    expect(url.origin + url.pathname).toBe(`${API_BASE_URL}/1`);
   });
 
   it('retorna null en respuesta 404', async () => {
@@ -49,9 +50,9 @@ describe('obtenerPeliculaPorId', () => {
     const resultado = await obtenerPeliculaPorId('5');
 
     expect(resultado).not.toBeNull();
-    expect(resultado.imdbID).toBe('5');
+    expect(resultado.Id).toBe(5);
     expect(resultado.Title).toBe('Inception');
-    expect(resultado.Images).toEqual(['img.jpg']);
+    expect(resultado.Images).toEqual([imagenUrl('img.jpg')]);
     expect(resultado.Type).toBe('movie');
     expect(resultado.Genre).toBe('N/A');
   });

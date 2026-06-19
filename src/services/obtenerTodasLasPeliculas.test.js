@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { obtenerTodasLasPeliculas } from './obtenerTodasLasPeliculas';
-import { API_BASE_URL, ITEMS_PER_PAGE } from '../config';
+import { API_BASE_URL, ITEMS_PER_PAGE, imagenUrl } from '../config';
 
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
@@ -70,11 +70,11 @@ describe('obtenerTodasLasPeliculas', () => {
     const resultado = await obtenerTodasLasPeliculas(1);
 
     expect(resultado).toHaveLength(2);
-    expect(resultado[0].imdbID).toBe('1');
+    expect(resultado[0].Id).toBe(1);
     expect(resultado[0].Title).toBe('Inception');
-    expect(resultado[0].Images).toEqual(['img.jpg']);
+    expect(resultado[0].Images).toEqual([imagenUrl('img.jpg')]);
     expect(resultado[0].Type).toBe('movie');
-    expect(resultado[1].imdbID).toBe('2');
+    expect(resultado[1].Id).toBe(2);
   });
 
   it('retorna arreglo vacio si la respuesta no tiene data', async () => {

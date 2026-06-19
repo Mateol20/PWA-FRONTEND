@@ -2,7 +2,7 @@ import i18n from "../context/i18n.js";
 import { API_BASE_URL, ITEMS_PER_PAGE, imagenUrl } from "../config";
 
 const mapearPelicula = (p) => ({
-  imdbID: String(p.Id),
+  Id: p.Id,
   Title: p.Title,
   Year: p.Year,
   Poster: imagenUrl(p.Poster),
