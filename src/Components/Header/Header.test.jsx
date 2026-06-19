@@ -21,16 +21,6 @@ vi.mock('../../context/ContextoBusqueda', () => ({
   }),
 }));
 
-vi.mock('../../context/ContextoAuth', () => ({
-  useAuth: () => ({
-    usuario: null,
-    login: vi.fn(),
-    logout: vi.fn(),
-    isAuthenticated: false,
-    isAdmin: false,
-  }),
-}));
-
 describe('Encabezado', () => {
   it('muestra el boton de inicio', () => {
     render(

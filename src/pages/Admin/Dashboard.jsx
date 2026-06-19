@@ -1,7 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/ContextoAuth";
-
 const clientesMock = [
   { id: 1, name: "Cy Ganderton", job: "Quality Control Specialist", email: "cy@example.com", rate: "$3,000", isactive: true },
   { id: 2, name: "Hart Hagerty", job: "Desktop Support Technician", email: "hart@example.com", rate: "$2,500", isactive: false },
@@ -9,7 +7,6 @@ const clientesMock = [
 ];
 
 export default function Dashboard() {
-  const { logout } = useAuth();
   const navigate = useNavigate();
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState(null);
@@ -20,7 +17,6 @@ export default function Dashboard() {
   };
 
   const cerrarSesion = () => {
-    logout();
     navigate("/");
   };
 
