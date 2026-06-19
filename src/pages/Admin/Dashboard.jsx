@@ -1,11 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
 import { API_BASE_URL } from "../../config";
 
 const BASE = API_BASE_URL.replace("/api/peliculas", "");
 
 export default function Dashboard() {
-  const navigate = useNavigate();
   const [usuarios, setUsuarios] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
@@ -85,18 +83,13 @@ export default function Dashboard() {
   if (cargando) return <div className="min-h-screen bg-slate-950 flex items-center justify-center"><p className="text-blue-400 animate-pulse">Cargando...</p></div>;
 
   return (
-    <div className="min-h-screen bg-slate-950">
-      <div className="navbar bg-slate-900 border-b border-slate-700 shadow-sm">
-        <div className="navbar-start">
-          <a className="btn btn-ghost text-xl text-slate-100">Admin Panel</a>
-        </div>
-        <div className="navbar-end gap-2">
-          <button className="btn btn-primary" onClick={() => abrirModal(null)}>Agregar Usuario</button>
-          <button className="btn btn-ghost text-slate-300" onClick={() => navigate("/")}>Salir</button>
-        </div>
+    <div className="p-6">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold text-slate-100">Usuarios</h2>
+        <button className="btn btn-primary" onClick={() => abrirModal(null)}>Agregar Usuario</button>
       </div>
 
-      <div className="overflow-x-auto p-6">
+      <div className="overflow-x-auto">
         <table className="table w-full">
           <thead>
             <tr className="text-slate-400">
