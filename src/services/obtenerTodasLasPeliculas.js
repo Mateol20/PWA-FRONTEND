@@ -1,19 +1,20 @@
 import i18n from "../context/i18n.js";
-import { API_BASE_URL, ITEMS_PER_PAGE } from "../config";
+import { API_BASE_URL, ITEMS_PER_PAGE, imagenUrl } from "../config";
 
 const mapearPelicula = (p) => ({
   imdbID: String(p.Id),
   Title: p.Title,
   Year: p.Year,
-  Poster: p.Poster,
+  Poster: imagenUrl(p.Poster),
   imdbRating: String(p.imdbRating),
   Runtime: String(p.Runtime),
   Director: p.Director,
   Plot: p.Plot,
-  Images: [p.Images],
+  Images: [imagenUrl(p.Images)],
   Actors: p.Actors,
   Type: p.Type || "movie",
   Genre: p.Genre || "N/A",
+  Trailer: p.Trailer || null,
 });
 
 export const obtenerTodasLasPeliculas = async (pagina = 1, busqueda = "") => {

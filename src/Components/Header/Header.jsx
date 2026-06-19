@@ -29,10 +29,23 @@ const Encabezado = () => {
     navegar("/favoritos");
   };
 
-  const cambiarIdioma = () => {
-    const nuevo = i18n.language === "es" ? "en" : "es";
-    i18n.changeLanguage(nuevo);
+  const [idiomaAbierto, setIdiomaAbierto] = useState(false);
+  const menuRef = useRef(null);
+
+  const cambiarIdioma = (lang) => {
+    i18n.changeLanguage(lang);
+    setIdiomaAbierto(false);
   };
+
+  useEffect(() => {
+    const cerrar = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setIdiomaAbierto(false);
+      }
+    };
+    document.addEventListener("mousedown", cerrar);
+    return () => document.removeEventListener("mousedown", cerrar);
+  }, []);
 
   const manejarEnvio = (e) => {
     e.preventDefault();
@@ -58,18 +71,41 @@ const Encabezado = () => {
             type="text"
             value={texto}
             onChange={(e) => setTexto(e.target.value)}
-            className="w-full h-10 border border-slate-600 rounded-lg bg-slate-800 text-slate-200 placeholder-slate-400 px-4 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            className="w-full h-10 border border-slate-600 rounded-lg bg-slate-800 text-slate-200 placeholder-slate-400 px-4 focus:outline-none focus:border-blue-400 focus:ring-[3px] focus:ring-blue-500/20 transition-shadow"
             placeholder={t("buscar")}
           />
         </form>
 
         <div className="flex items-center gap-3">
-          <button
-            onClick={cambiarIdioma}
-            className="text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 px-3 py-2 rounded-lg text-sm font-semibold transition-colors border border-slate-700"
-          >
-            {i18n.language === "es" ? "EN" : "ES"}
-          </button>
+          <div className="relative" ref={menuRef}>
+            <button
+              onClick={() => setIdiomaAbierto(!idiomaAbierto)}
+              className="flex items-center gap-1.5 text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 px-3 py-2 rounded-lg text-sm font-semibold transition-colors border border-slate-700"
+            >
+              <span className="text-base leading-none">{i18n.language === "es" ? "🇪🇸" : "🇺🇸"}</span>
+              <svg className={`w-3 h-3 transition-transform ${idiomaAbierto ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            {idiomaAbierto && (
+              <div className="absolute right-0 mt-2 w-36 bg-slate-800 border border-slate-700 rounded-lg shadow-xl overflow-hidden z-50">
+                <button
+                  onClick={() => cambiarIdioma("es")}
+                  className={`flex items-center gap-2 w-full px-3 py-2 text-sm font-medium transition-colors ${i18n.language === "es" ? "text-blue-400 bg-blue-500/10" : "text-slate-300 hover:bg-slate-700"}`}
+                >
+                  <span className="text-base leading-none">🇪🇸</span>
+                  Español
+                </button>
+                <button
+                  onClick={() => cambiarIdioma("en")}
+                  className={`flex items-center gap-2 w-full px-3 py-2 text-sm font-medium transition-colors ${i18n.language === "en" ? "text-blue-400 bg-blue-500/10" : "text-slate-300 hover:bg-slate-700"}`}
+                >
+                  <span className="text-base leading-none">🇺🇸</span>
+                  English
+                </button>
+              </div>
+            )}
+          </div>
 
           <button
             className="flex items-center gap-2 text-slate-200 hover:text-red-400 font-semibold transition-colors"
