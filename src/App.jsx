@@ -7,6 +7,7 @@ import Inicio from "./pages/Home/Home";
 import DetallePelicula from "./pages/DetallePelicula/DetallePelicula";
 import PaginaDeFavoritos from "./pages/Favoritos/PaginaDeFavoritos";
 import Dashboard from "./pages/Admin/Dashboard";
+import { Login, Register } from "./pages/Auth";
 import PublicLayout from "./layouts/publicLayout";
 import AdminLayout from "./layouts/adminLayout";
 import ProtectedRoute from "./Components/ProtectedRoute/ProtectedRoute";
@@ -23,6 +24,8 @@ function App() {
                   <Route path="/" element={<Inicio />} />
                   <Route path="/pelicula/:id" element={<DetallePelicula />} />
                   <Route path="/favoritos" element={<PaginaDeFavoritos />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
                 </Route>
                 <Route element={<ProtectedRoute requiredRole="admin"><AdminLayout /></ProtectedRoute>}>
                   <Route path="/admin" element={<Dashboard />} />
