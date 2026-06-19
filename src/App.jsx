@@ -6,6 +6,7 @@ import { ProveedorBusqueda } from "./context/ContextoBusqueda";
 import Inicio from "./pages/Home/Home";
 import DetallePelicula from "./pages/DetallePelicula/DetallePelicula";
 import PaginaDeFavoritos from "./pages/Favoritos/PaginaDeFavoritos";
+import Dashboard from "./pages/Admin/Dashboard";
 import PublicLayout from "./layouts/publicLayout";
 import AdminLayout from "./layouts/adminLayout";
 import ProtectedRoute from "./Components/ProtectedRoute/ProtectedRoute";
@@ -24,7 +25,7 @@ function App() {
                   <Route path="/favoritos" element={<PaginaDeFavoritos />} />
                 </Route>
                 <Route element={<ProtectedRoute requiredRole="admin"><AdminLayout /></ProtectedRoute>}>
-                  <Route path="/admin" element={<div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">Panel Admin</div>} />
+                  <Route path="/admin" element={<Dashboard />} />
                 </Route>
               </Routes>
             </Suspense>
