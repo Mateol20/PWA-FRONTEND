@@ -1,4 +1,5 @@
 import { NavLink, Outlet } from "react-router-dom";
+import { BASE_URL } from "../config";
 
 export default function AdminLayout() {
   const linkClass = ({ isActive }) =>
@@ -14,7 +15,10 @@ export default function AdminLayout() {
           <NavLink to="/admin" end className={linkClass}>Usuarios</NavLink>
           <NavLink to="/admin/peliculas" className={linkClass}>Películas</NavLink>
         </div>
-        <div className="navbar-end">
+        <div className="navbar-end gap-2">
+          <a href={`${BASE_URL}/api-docs/`} target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-ghost text-slate-300">
+            API Docs
+          </a>
           <NavLink to="/" className="btn btn-ghost text-slate-300">Salir</NavLink>
         </div>
       </div>
