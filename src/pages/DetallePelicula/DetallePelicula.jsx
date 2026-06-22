@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, Navigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useFavoritos } from "../../context/ContextoFavoritos";
 import { obtenerPeliculaPorId } from "../../services/obtenerPeliculaPorId";
@@ -105,14 +105,7 @@ export default function DetallePelicula() {
   }
 
   if (!pelicula) {
-    return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center gap-4">
-        <p className="text-slate-400">{t("noEncontrada")}</p>
-        <Link to="/" className="text-blue-400 hover:underline">
-          {t("volverInicio")}
-        </Link>
-      </div>
-    );
+    return <Navigate to="/404" replace />;
   }
 
   return (

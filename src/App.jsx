@@ -7,6 +7,7 @@ import DetallePelicula from "./pages/DetallePelicula/DetallePelicula";
 import PaginaDeFavoritos from "./pages/Favoritos/PaginaDeFavoritos";
 import Dashboard from "./pages/Admin/Dashboard";
 import Movies from "./pages/Admin/Movies";
+import NotFound from "./pages/NotFound/NotFound";
 import PublicLayout from "./layouts/publicLayout";
 import AdminLayout from "./layouts/adminLayout";
 import ProtectedRoute from "./Components/ProtectedRoute/ProtectedRoute";
@@ -27,6 +28,7 @@ function App() {
                 <Route index element={<Dashboard />} />
                 <Route path="peliculas" element={<Movies />} />
               </Route>
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
         </ProveedorFavoritos>
