@@ -10,7 +10,7 @@ export default function TarjetaPelicula({ datos }) {
     <section className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-x-3 gap-y-6 sm:gap-x-6 sm:gap-y-10 justify-items-center max-w-7xl mx-auto px-4 sm:px-6">
       {datos.map((pelicula, indice) => (
         <ItemPelicula
-          key={`${pelicula.imdbID}-${indice}`}
+          key={`${pelicula.Id}-${indice}`}
           pelicula={pelicula}
           indice={indice}
           esFavorito={esFavorito}

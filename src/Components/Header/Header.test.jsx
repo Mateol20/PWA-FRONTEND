@@ -46,7 +46,7 @@ describe('Encabezado', () => {
         <Encabezado />
       </MemoryRouter>
     );
-    expect(screen.getByText('EN')).toBeInTheDocument();
+    expect(screen.getByText('🇪🇸')).toBeInTheDocument();
   });
 
   it('muestra el boton de favoritos', () => {
@@ -65,8 +65,8 @@ describe('Encabezado', () => {
         <Encabezado />
       </MemoryRouter>
     );
-    const botonIdioma = screen.getByText('EN');
-    await user.click(botonIdioma);
+    await user.click(screen.getByText('🇪🇸'));
+    await user.click(screen.getByText('English'));
     expect(mockChangeLanguage).toHaveBeenCalledWith('en');
   });
 });

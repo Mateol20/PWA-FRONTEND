@@ -27,7 +27,7 @@ export default function ItemPelicula({ pelicula, indice, esFavorito, alternarFav
   };
 
   const tipoPelicula = pelicula.Type === "movie";
-  const favorito = esFavorito ? esFavorito(pelicula.imdbID) : false;
+  const favorito = esFavorito ? esFavorito(pelicula.Id) : false;
 
   return (
     <article className="w-full bg-slate-800 border border-slate-700/50 rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl flex flex-col hover:scale-[1.03] transition-all duration-300 hover:border-blue-500/50 group relative">
@@ -43,7 +43,11 @@ export default function ItemPelicula({ pelicula, indice, esFavorito, alternarFav
         {alternarFavorito && (
           <button
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); alternarFavorito(pelicula); }}
-            className={`absolute top-3 right-3 p-2 rounded-full transition-all z-20 ${favorito ? "text-yellow-400 bg-yellow-400/20 hover:bg-yellow-400/30" : "text-slate-400 bg-slate-900/60 hover:bg-slate-900/80"}`}
+            className={`absolute top-3 right-3 p-2 rounded-full transition-all duration-300 z-20 opacity-0 group-hover:opacity-100 ${
+              favorito
+                ? "text-yellow-400 bg-yellow-400/20 hover:bg-yellow-400/30 opacity-100"
+                : "text-slate-400 bg-slate-900/60 hover:bg-slate-900/80"
+            }`}
           >
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
@@ -53,9 +57,9 @@ export default function ItemPelicula({ pelicula, indice, esFavorito, alternarFav
       </div>
       <div className="px-3 py-3 sm:px-5 sm:py-5 flex flex-col flex-1 bg-slate-800 z-10">
         <h2 className="text-slate-50 font-bold text-xs sm:text-lg md:text-xl line-clamp-2 leading-tight mb-1 group-hover:text-blue-400 transition-colors">
-          <Link to={`/pelicula/${pelicula.imdbID}`}>{pelicula.Title}</Link>
+          <Link to={`/pelicula/${pelicula.Id}`}>{pelicula.Title}</Link>
         </h2>
-        <div><Etiqueta tipo={tipoPelicula ? "pelicula" : pelicula.Type} /></div>
+        <div><Etiqueta tipo={tipoPelicula ? "pelicula" : "serie"} /></div>
         <p className="text-slate-400 font-medium text-[11px] sm:text-sm mb-2 sm:mb-4">
           {t("publicadoEn")} <span className="text-slate-300">{pelicula.Year}</span>
         </p>

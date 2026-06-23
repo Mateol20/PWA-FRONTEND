@@ -1,6 +1,15 @@
-import { createContext, useContext, useState, useEffect, useMemo, useCallback } from "react";
-import { STORAGE_KEYS } from "../config";
-import { obtenerFavoritosAPI, toggleFavoritoAPI } from "../services/obtenerFavoritos";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+} from "react";
+import {
+  obtenerFavoritosAPI,
+  toggleFavoritoAPI,
+} from "../services/obtenerFavoritos";
 
 const ContextoFavoritos = createContext();
 
@@ -12,15 +21,6 @@ export const useFavoritos = () => {
   return contexto;
 };
 
-const obtenerFavoritosLocales = () => {
-  try {
-    const guardado = localStorage.getItem(STORAGE_KEYS.FAVORITOS);
-    return guardado ? JSON.parse(guardado) : [];
-  } catch {
-    return [];
-  }
-};
-
 export const ProveedorFavoritos = ({ children }) => {
   const [favoritos, setFavoritos] = useState([]);
   const [cargando, setCargando] = useState(true);
@@ -30,36 +30,38 @@ export const ProveedorFavoritos = ({ children }) => {
       const datosAPI = await obtenerFavoritosAPI();
       if (datosAPI !== null) {
         setFavoritos(datosAPI);
-        localStorage.setItem(STORAGE_KEYS.FAVORITOS, JSON.stringify(datosAPI));
-      } else {
-        setFavoritos(obtenerFavoritosLocales());
       }
       setCargando(false);
     };
     cargarFavoritos();
   }, []);
 
-  useEffect(() => {
-    if (!cargando) {
-      localStorage.setItem(STORAGE_KEYS.FAVORITOS, JSON.stringify(favoritos));
-    }
-  }, [favoritos, cargando]);
-
   const esFavorito = useCallback(
-    (id) => favoritos.some((p) => p.imdbID === id),
+    (id) => favoritos.some((p) => p.Id === id),
     [favoritos],
   );
 
-  const alternarFavorito = useCallback(async (pelicula) => {
-    setFavoritos((prev) => {
-      const yaExiste = prev.find((p) => p.imdbID === pelicula.imdbID);
-      return yaExiste
-        ? prev.filter((p) => p.imdbID !== pelicula.imdbID)
-        : [...prev, pelicula];
-    });
+  const alternarFavorito = useCallback(
+    async (pelicula) => {
+      const yaEraFavorito = favoritos.some((p) => p.Id === pelicula.Id);
 
-    await toggleFavoritoAPI(pelicula);
-  }, []);
+      setFavoritos((prev) => {
+        return yaEraFavorito
+          ? prev.filter((p) => p.Id !== pelicula.Id)
+          : [...prev, pelicula];
+      });
+      try {
+        await toggleFavoritoAPI(pelicula);
+      } catch {
+        setFavoritos((prev) => {
+          return yaEraFavorito
+            ? [...prev, pelicula]
+            : prev.filter((p) => p.Id !== pelicula.Id);
+        });
+      }
+    },
+    [favoritos],
+  );
 
   const valor = useMemo(
     () => ({ favoritos, alternarFavorito, esFavorito, cargando }),

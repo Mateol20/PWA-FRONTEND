@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback } from "react";
+import { createContext, useContext, useState, useCallback, useMemo } from "react";
 
 const ContextoBusqueda = createContext();
 
@@ -22,8 +22,10 @@ export const ProveedorBusqueda = ({ children }) => {
     setTermino("");
   }, []);
 
+  const valor = useMemo(() => ({ termino, buscar, limpiar }), [termino, buscar, limpiar]);
+
   return (
-    <ContextoBusqueda.Provider value={{ termino, buscar, limpiar }}>
+    <ContextoBusqueda.Provider value={valor}>
       {children}
     </ContextoBusqueda.Provider>
   );

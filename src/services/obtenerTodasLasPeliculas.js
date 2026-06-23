@@ -1,44 +1,37 @@
 import i18n from "../context/i18n.js";
 import { API_BASE_URL, ITEMS_PER_PAGE } from "../config";
+import { mapearPelicula } from "../utils/mapearPelicula";
+import { getCache, setCache } from "../utils/cache";
 
-const mapearPelicula = (p) => ({
-  imdbID: String(p.Id),
-  Title: p.Title,
-  Year: p.Year,
-  Poster: p.Poster,
-  imdbRating: String(p.imdbRating),
-  Runtime: String(p.Runtime),
-  Director: p.Director,
-  Plot: p.Plot,
-  Images: [p.Images],
-  Actors: p.Actors,
-  Type: p.Type || "movie",
-  Genre: p.Genre || "N/A",
-});
+export const obtenerTodasLasPeliculas = async (cursor = null, busqueda = "", signal) => {
+  const lang = i18n.language || "es";
+  const cacheKey = `peliculas_${cursor ?? 0}_${busqueda}_${lang}`;
+  const cached = getCache(cacheKey);
+  if (cached) return cached;
 
-export const obtenerTodasLasPeliculas = async (pagina = 1, busqueda = "") => {
   try {
     const url = new URL(API_BASE_URL);
-    url.searchParams.append("page", pagina.toString());
     url.searchParams.append("limit", ITEMS_PER_PAGE.toString());
-
-    if (busqueda?.trim()) {
-      url.searchParams.append("search", busqueda.trim());
-    }
-
-    const lang = i18n.language || "es";
     url.searchParams.append("lang", lang);
+    if (cursor) url.searchParams.append("cursor", cursor.toString());
+    if (busqueda?.trim()) url.searchParams.append("search", busqueda.trim());
 
-    const respuesta = await fetch(url);
+    const respuesta = await fetch(url, { signal });
     if (!respuesta.ok) {
-      if (respuesta.status === 404) return [];
+      if (respuesta.status === 404) return { data: [], nextCursor: null };
       throw new Error(`Error HTTP: ${respuesta.status}`);
     }
 
     const datos = await respuesta.json();
-    return Array.isArray(datos?.data) ? datos.data.map(mapearPelicula) : [];
+    const resultado = {
+      data: Array.isArray(datos?.data) ? datos.data.map(mapearPelicula) : [],
+      nextCursor: datos?.nextCursor ?? null,
+    };
+    setCache(cacheKey, resultado);
+    return resultado;
   } catch (error) {
+    if (error.name === "AbortError") return { data: [], nextCursor: null };
     console.error("Error en obtenerTodasLasPeliculas:", error);
-    return [];
+    return { data: [], nextCursor: null };
   }
 };

@@ -2,12 +2,13 @@ import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useBusqueda } from "../../context/ContextoBusqueda";
-import { DEBOUNCE_MS } from "../../config";
+import { DEBOUNCE_MS, BASE_URL } from "../../config";
 
 const Encabezado = () => {
   const { t, i18n } = useTranslation();
   const navegar = useNavigate();
   const { termino, buscar, limpiar } = useBusqueda();
+  const navegarAdmin = () => navegar("/admin");
   const [texto, setTexto] = useState(termino);
   const retrasoRef = useRef();
 
@@ -29,10 +30,23 @@ const Encabezado = () => {
     navegar("/favoritos");
   };
 
-  const cambiarIdioma = () => {
-    const nuevo = i18n.language === "es" ? "en" : "es";
-    i18n.changeLanguage(nuevo);
+  const [idiomaAbierto, setIdiomaAbierto] = useState(false);
+  const menuRef = useRef(null);
+
+  const cambiarIdioma = (lang) => {
+    i18n.changeLanguage(lang);
+    setIdiomaAbierto(false);
   };
+
+  useEffect(() => {
+    const cerrar = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setIdiomaAbierto(false);
+      }
+    };
+    document.addEventListener("mousedown", cerrar);
+    return () => document.removeEventListener("mousedown", cerrar);
+  }, []);
 
   const manejarEnvio = (e) => {
     e.preventDefault();
@@ -58,18 +72,41 @@ const Encabezado = () => {
             type="text"
             value={texto}
             onChange={(e) => setTexto(e.target.value)}
-            className="w-full h-10 border border-slate-600 rounded-lg bg-slate-800 text-slate-200 placeholder-slate-400 px-4 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            className="w-full h-10 border border-slate-600 rounded-lg bg-slate-800 text-slate-200 placeholder-slate-400 px-4 focus:outline-none focus:border-blue-400 focus:ring-[3px] focus:ring-blue-500/20 transition-shadow"
             placeholder={t("buscar")}
           />
         </form>
 
         <div className="flex items-center gap-3">
-          <button
-            onClick={cambiarIdioma}
-            className="text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 px-3 py-2 rounded-lg text-sm font-semibold transition-colors border border-slate-700"
-          >
-            {i18n.language === "es" ? "EN" : "ES"}
-          </button>
+          <div className="relative" ref={menuRef}>
+            <button
+              onClick={() => setIdiomaAbierto(!idiomaAbierto)}
+              className="flex items-center gap-1.5 text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 px-3 py-2 rounded-lg text-sm font-semibold transition-colors border border-slate-700"
+            >
+              <span className="text-base leading-none">{i18n.language === "es" ? "🇪🇸" : "🇺🇸"}</span>
+              <svg className={`w-3 h-3 transition-transform ${idiomaAbierto ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            {idiomaAbierto && (
+              <div className="absolute right-0 mt-2 w-36 bg-slate-800 border border-slate-700 rounded-lg shadow-xl overflow-hidden z-50">
+                <button
+                  onClick={() => cambiarIdioma("es")}
+                  className={`flex items-center gap-2 w-full px-3 py-2 text-sm font-medium transition-colors ${i18n.language === "es" ? "text-blue-400 bg-blue-500/10" : "text-slate-300 hover:bg-slate-700"}`}
+                >
+                  <span className="text-base leading-none">🇪🇸</span>
+                  Español
+                </button>
+                <button
+                  onClick={() => cambiarIdioma("en")}
+                  className={`flex items-center gap-2 w-full px-3 py-2 text-sm font-medium transition-colors ${i18n.language === "en" ? "text-blue-400 bg-blue-500/10" : "text-slate-300 hover:bg-slate-700"}`}
+                >
+                  <span className="text-base leading-none">🇺🇸</span>
+                  English
+                </button>
+              </div>
+            )}
+          </div>
 
           <button
             className="flex items-center gap-2 text-slate-200 hover:text-red-400 font-semibold transition-colors"
@@ -80,6 +117,24 @@ const Encabezado = () => {
             </svg>
             <span className="hidden sm:inline">{t("favoritos")}</span>
           </button>
+
+          <button
+            onClick={navegarAdmin}
+            className="flex items-center gap-2 text-slate-200 hover:text-green-400 font-semibold transition-colors"
+          >
+            <svg className="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <span className="hidden sm:inline">Admin</span>
+          </button>
+
+          <a href={`${BASE_URL}/api-docs/`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-slate-200 hover:text-blue-400 font-semibold transition-colors">
+            <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <span className="hidden sm:inline">API Docs</span>
+          </a>
         </div>
       </div>
     </header>
