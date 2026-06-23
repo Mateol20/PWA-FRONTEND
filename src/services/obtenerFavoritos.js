@@ -1,22 +1,12 @@
-import { API_BASE_URL, imagenUrl } from "../config";
-
-const mapearPelicula = (p) => ({
-  Id: p.Id,
-  Title: p.Title,
-  Year: p.Year,
-  Poster: imagenUrl(p.Poster),
-  imdbRating: String(p.imdbRating),
-  Runtime: String(p.Runtime),
-  Director: p.Director,
-  Plot: p.Plot,
-  Images: [imagenUrl(p.Images)],
-  Actors: p.Actors,
-  Type: p.Type || "movie",
-  Genre: p.Genre || "N/A",
-  Trailer: p.Trailer || null,
-});
+import { API_BASE_URL } from "../config";
+import { mapearPelicula } from "../utils/mapearPelicula";
+import { getCache, setCache, clearCache } from "../utils/cache";
 
 export const obtenerFavoritosAPI = async () => {
+  const cacheKey = "favoritos";
+  const cached = getCache(cacheKey);
+  if (cached) return cached;
+
   try {
     const url = new URL(API_BASE_URL);
     url.pathname += "/favoritas";
@@ -27,7 +17,9 @@ export const obtenerFavoritosAPI = async () => {
 
     const datos = await respuesta.json();
     if (datos?.status === "success" && Array.isArray(datos?.data)) {
-      return datos.data.map((fav) => mapearPelicula(fav.pelicula));
+      const resultado = datos.data.map((fav) => mapearPelicula(fav.movie));
+      setCache(cacheKey, resultado, 60 * 1000);
+      return resultado;
     }
     return [];
   } catch (error) {
@@ -49,6 +41,7 @@ export const toggleFavoritoAPI = async (pelicula) => {
     if (!respuesta.ok) throw new Error(`Error HTTP: ${respuesta.status}`);
 
     const datos = await respuesta.json();
+    clearCache("favoritos");
     return datos?.esFavorito ?? false;
   } catch (error) {
     console.error("Error al alternar favorito:", error);

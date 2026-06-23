@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { obtenerPeliculaPorId } from './obtenerPeliculaPorId';
 import { API_BASE_URL, imagenUrl } from '../config';
+import { clearCache } from '../utils/cache';
 
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
@@ -8,6 +9,7 @@ global.fetch = mockFetch;
 describe('obtenerPeliculaPorId', () => {
   beforeEach(() => {
     mockFetch.mockReset();
+    clearCache();
   });
 
   it('llama al endpoint con el ID correcto', async () => {

@@ -1,5 +1,15 @@
-import { createContext, useContext, useState, useEffect, useMemo, useCallback } from "react";
-import { obtenerFavoritosAPI, toggleFavoritoAPI } from "../services/obtenerFavoritos";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+} from "react";
+import {
+  obtenerFavoritosAPI,
+  toggleFavoritoAPI,
+} from "../services/obtenerFavoritos";
 
 const ContextoFavoritos = createContext();
 
@@ -31,16 +41,27 @@ export const ProveedorFavoritos = ({ children }) => {
     [favoritos],
   );
 
-  const alternarFavorito = useCallback(async (pelicula) => {
-    setFavoritos((prev) => {
-      const yaExiste = prev.find((p) => p.Id === pelicula.Id);
-      return yaExiste
-        ? prev.filter((p) => p.Id !== pelicula.Id)
-        : [...prev, pelicula];
-    });
+  const alternarFavorito = useCallback(
+    async (pelicula) => {
+      const yaEraFavorito = favoritos.some((p) => p.Id === pelicula.Id);
 
-    await toggleFavoritoAPI(pelicula);
-  }, []);
+      setFavoritos((prev) => {
+        return yaEraFavorito
+          ? prev.filter((p) => p.Id !== pelicula.Id)
+          : [...prev, pelicula];
+      });
+      try {
+        await toggleFavoritoAPI(pelicula);
+      } catch {
+        setFavoritos((prev) => {
+          return yaEraFavorito
+            ? [...prev, pelicula]
+            : prev.filter((p) => p.Id !== pelicula.Id);
+        });
+      }
+    },
+    [favoritos],
+  );
 
   const valor = useMemo(
     () => ({ favoritos, alternarFavorito, esFavorito, cargando }),
