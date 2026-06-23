@@ -1,6 +1,6 @@
 # TP2 - Gestor de Películas
 
-Aplicación web de página única (SPA) desarrollada en React que permite buscar, visualizar y gestionar películas. Incluye scroll infinito, traducción a español/inglés, y gestión de favoritos persistente.
+Aplicación web SPA en React que permite buscar, visualizar y gestionar películas. Incluye scroll infinito con cursor-based pagination, multi-idioma, panel de administración y documentación Swagger.
 
 **Desarrollado por:**
 
@@ -9,83 +9,65 @@ Aplicación web de página única (SPA) desarrollada en React que permite buscar
 
 ## Características
 
-- ♾️ **Scroll infinito**: Carga automática de resultados usando `react-infinite-scroll-hook`.
-- ❤️ **Favoritos globales**: Sincronización instantánea entre vistas con persistencia en `localStorage`.
-- 🌐 **Multi-idioma**: Soporte para Español e Inglés (`i18next`).
-- 📱 **Responsive**: Diseño adaptable con Tailwind CSS.
+- ♾️ **Scroll infinito** con cursor-based pagination + caché en memoria
+- ❤️ **Favoritos** con optimistic update y persistencia en DB
+- 🌐 **Multi-idioma**: Español e Inglés (i18next)
+- 📱 **Responsive**: Tailwind CSS + DaisyUI
+- 🔧 **Panel admin**: CRUD de usuarios y películas con tabs
+- 📄 **Documentación API**: Swagger UI integrada
+- 🚀 **Cancelación de requests** con AbortController
 
 ## Tecnologías
 
 - React 19 + Vite
-- Tailwind CSS
+- Tailwind CSS + DaisyUI 5
 - React Router DOM
 - i18next
-- react-infinite-scroll-hook
-- MockAPI
-- Vitest
-- React Testing Library
-- jest-dom
-- user-event
+- react-infinite-scroll-hook (IntersectionObserver)
+- Vitest + React Testing Library
 
-## API utilizada
+## API
 
-Este proyecto consume una API REST falsa alojada en [MockAPI](https://mockapi.io/), utilizada para simular operaciones CRUD sobre un catálogo de películas.
+Este proyecto consume su propia API REST (backend del mismo TP):
 
-**URL base:** `https://69e65c86ce4e908a155f6c79.mockapi.io/api/v1/peliculas`
+- **URL base:** Configurable vía `VITE_API_URL` en `.env`
+- **Paginación:** Cursor-based (cursor = ID de última película)
+- **Documentación:** Swagger UI en `http://localhost:3000/api-docs`
 
-**Endpoints:**
-```
-GET    /peliculas           # Obtener todas las películas
-GET    /peliculas/:id       # Obtener una película por ID
-POST   /peliculas           # Crear una nueva película
-PUT    /peliculas/:id       # Actualizar una película
-DELETE /peliculas/:id       # Eliminar una película
-```
+## Requisitos
 
-> La URL base se configura en `src/config.js`.
+- Node.js 18+
+- Backend corriendo en `http://localhost:3000` (ver [PWA-backend](https://github.com/Mateol20/PWA-backend))
 
 ## Instalación
 
-1. **Clonar el repositorio**:
+```bash
+git clone https://github.com/Mateol20/PWA-FRONTEND.git
+cd PWA-FRONTEND
+npm install
+```
 
-   ```bash
-   git clone https://github.com/Mateol20/PWA2026.git
-   cd PWA2026/TP2
-   ```
+### Variables de entorno
 
-2. **Instalar dependencias**:
+```bash
+cp .env.example .env
+```
 
-   ```bash
-   npm install
-   ```
+Por defecto apunta a `http://localhost:3000`. Si el backend está en otra URL, editar `.env`.
 
-3. **Iniciar servidor de desarrollo**:
-   ```bash
-   npm run dev
-   ```
-   La aplicación estará disponible en `http://localhost:5173`.
+### Iniciar
+
+```bash
+npm run dev
+```
+
+Disponible en `http://localhost:5173`.
 
 ## Testing
 
-El proyecto incluye tests automáticos utilizando **Vitest** y **React Testing Library**.
-
-### Librerías instaladas para testing
-
-| Librería                      | 
-| ----------------------------- | 
-| `vitest`                      |
-| `@testing-library/react`      |
-| `@testing-library/jest-dom`   |
-| `@testing-library/user-event` |
-| `jsdom`                       |
-
-### Cómo ejecutar los tests
-
 ```bash
-cd TP2
-npm run test        # Ejecutar en modo watch
-npm run test:run    # Ejecutar una sola vez
-npm run "nombre del test.jsx" # Ejecutar un test en especifico
+npm test          # Modo watch
+npm run test:run  # Una sola vez
 ```
 
 ### Estructura de tests
@@ -107,29 +89,73 @@ src/
     └── obtenerPeliculaPorId.test.js
 ```
 
-## Estructura del Proyecto
+## Estructura del proyecto
 
 ```
-TP2/
+src/
+├── Components/
+│   ├── Header/               # Barra de navegación, búsqueda, admin button
+│   ├── Footer/               # Pie de página
+│   ├── TarjetaPelicula/      # Grid contenedor de películas
+│   ├── ItemPelicula/         # Tarjeta individual con botón de favorito
+│   ├── FiltrosPelicula/      # Filtros por género y tipo
+│   └── Etiqueta/             # Badge de tipo (película/serie)
+├── context/
+│   ├── ContextoFavoritos.jsx  # Estado global de favoritos (optimistic update)
+│   ├── ContextoBusqueda.jsx   # Estado global de búsqueda
+│   ├── i18n.js                # Configuración de idiomas
+│   └── locales/               # Archivos JSON de traducción
+├── layouts/
+│   └── adminLayout.jsx        # Layout del panel admin con tabs
+├── pages/
+│   ├── Home/                  # Página principal con scroll infinito
+│   ├── DetallePelicula/       # Vista detallada con PDF export
+│   ├── Favoritos/             # Lista de películas guardadas
+│   ├── NotFound/              # Página 404
+│   └── Admin/
+│       ├── Dashboard.jsx      # CRUD de usuarios
+│       └── Movies.jsx         # CRUD de películas (admin)
 ├── services/
-│   ├── getAllMovies.js          # Función para obtener lista de películas
-│   └── getMovieById.js          # Función para obtener detalle de una película
-├── src/
-│   ├── Components/
-│   │   ├── Header/              # Barra de navegación y búsqueda
-│   │   ├── Footer/              # Pie de página
-│   │   ├── TarjetaPelicula/     # Grid contenedor de películas
-│   │   └── ItemPelicula/        # Tarjeta individual de película
-│   ├── context/
-│   │   ├── ContextoFavoritos.jsx # Estado global de favoritos
-│   │   ├── ContextoBusqueda.jsx  # Estado global de búsqueda
-│   │   ├── i18n.js               # Configuración de idiomas
-│   │   └── locales/              # Archivos JSON (es.json, en.json)
-│   ├── pages/
-│   │   ├── Home/                 # Página principal con scroll infinito
-│   │   ├── DetallePelicula/      # Vista de información detallada
-│   │   └── Favoritos/            # Lista de películas guardadas
-│   ├── App.jsx                   # Rutas y configuración principal
-│   └── main.jsx                  # Punto de entrada
-└── README.md
+│   ├── obtenerTodasLasPeliculas.js  # Lista paginada (cursor-based)
+│   ├── obtenerPeliculaPorId.js      # Detalle de película
+│   └── obtenerFavoritos.js          # Favoritos + toggle
+├── utils/
+│   ├── mapearPelicula.js      # Mapper compartido backend → frontend
+│   └── cache.js               # Caché en memoria con TTL
+├── App.jsx                    # Rutas y configuración principal
+├── main.jsx                   # Punto de entrada
+└── config.js                  # Constantes (API_URL, ITEMS_PER_PAGE)
 ```
+
+## Arquitectura
+
+### Paginación (cursor-based)
+
+```
+Request:  GET /api/peliculas?limit=8
+Response: { data: [...], nextCursor: 16 }
+          └── cursor para la siguiente página
+Request:  GET /api/peliculas?cursor=16&limit=8
+Response: { data: [...], nextCursor: null }
+          └── no hay más páginas
+```
+
+### Caché
+
+Los servicios de datos tienen caché en memoria con TTL de 5 minutos. La caché de favoritos se invalida al alternar un favorito.
+
+### AbortController
+
+Las requests se cancelan al cambiar el término de búsqueda o al desmontar el componente, evitando race conditions y requests innecesarias.
+
+### Favoritos
+
+- **Optimistic update**: la UI se actualiza instantáneamente antes de la respuesta del servidor
+- **Sin rollback por ahora**: si la API falla, el estado local queda desincronizado
+
+### Panel Admin
+
+- Acceso directo desde el Header (sin autenticación)
+- Tabs de navegación: Usuarios | Películas
+- Modal CRUD con formularios
+- Botón "API Docs" que abre Swagger en nueva pestaña
