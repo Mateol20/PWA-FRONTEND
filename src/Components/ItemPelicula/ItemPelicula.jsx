@@ -27,7 +27,7 @@ export default function ItemPelicula({ pelicula, indice, esFavorito, alternarFav
   };
 
   const tipoPelicula = pelicula.Type === "movie";
-  const favorito = esFavorito ? esFavorito(pelicula.imdbID) : false;
+  const favorito = esFavorito ? esFavorito(pelicula.Id) : false;
 
   return (
     <article className="w-full bg-slate-800 border border-slate-700/50 rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl flex flex-col hover:scale-[1.03] transition-all duration-300 hover:border-blue-500/50 group relative">
@@ -57,7 +57,7 @@ export default function ItemPelicula({ pelicula, indice, esFavorito, alternarFav
       </div>
       <div className="px-3 py-3 sm:px-5 sm:py-5 flex flex-col flex-1 bg-slate-800 z-10">
         <h2 className="text-slate-50 font-bold text-xs sm:text-lg md:text-xl line-clamp-2 leading-tight mb-1 group-hover:text-blue-400 transition-colors">
-          <Link to={`/pelicula/${pelicula.imdbID}`}>{pelicula.Title}</Link>
+          <Link to={`/pelicula/${pelicula.Id}`}>{pelicula.Title}</Link>
         </h2>
         <div><Etiqueta tipo={tipoPelicula ? "pelicula" : "serie"} /></div>
         <p className="text-slate-400 font-medium text-[11px] sm:text-sm mb-2 sm:mb-4">

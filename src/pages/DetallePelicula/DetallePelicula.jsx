@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, Navigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useFavoritos } from "../../context/ContextoFavoritos";
 import { obtenerPeliculaPorId } from "../../services/obtenerPeliculaPorId";
@@ -7,7 +7,7 @@ import jsPDF from "jspdf";
 
 export default function DetallePelicula() {
   const { t, i18n } = useTranslation();
-  const { imdbID } = useParams();
+  const { id } = useParams();
   const [pelicula, setPelicula] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [descargando, setDescargando] = useState(false);
@@ -83,15 +83,15 @@ export default function DetallePelicula() {
 
   const cargarDetalle = useCallback(async () => {
     setCargando(true);
-    const datos = await obtenerPeliculaPorId(imdbID);
+    const datos = await obtenerPeliculaPorId(id);
     if (datos) {
       setPelicula(datos);
     }
     setCargando(false);
-  }, [imdbID]);
+  }, [id]);
 
   useEffect(() => {
-    if (imdbID) cargarDetalle();
+    if (id) cargarDetalle();
   }, [cargarDetalle, i18n.language]);
 
   if (cargando) {
@@ -105,14 +105,7 @@ export default function DetallePelicula() {
   }
 
   if (!pelicula) {
-    return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center gap-4">
-        <p className="text-slate-400">{t("noEncontrada")}</p>
-        <Link to="/" className="text-blue-400 hover:underline">
-          {t("volverInicio")}
-        </Link>
-      </div>
-    );
+    return <Navigate to="/404" replace />;
   }
 
   return (
@@ -214,7 +207,7 @@ export default function DetallePelicula() {
                 <button
                   onClick={() => alternarFavorito(pelicula)}
                   className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    esFavorito(pelicula.imdbID)
+                    esFavorito(pelicula.Id)
                       ? "bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30"
                       : "bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700"
                   }`}
@@ -222,7 +215,7 @@ export default function DetallePelicula() {
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                   </svg>
-                  {esFavorito(pelicula.imdbID) ? t("favoritos") : t("favorito")}
+                  {esFavorito(pelicula.Id) ? t("favoritos") : t("favorito")}
                 </button>
                 <button
                   onClick={descargarPDF}

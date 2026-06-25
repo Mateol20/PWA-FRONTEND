@@ -2,12 +2,14 @@ import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useBusqueda } from "../../context/ContextoBusqueda";
-import { DEBOUNCE_MS } from "../../config";
+import { useAuth } from "../../context/AuthContext";
+import { DEBOUNCE_MS, BASE_URL } from "../../config";
 
 const Encabezado = () => {
   const { t, i18n } = useTranslation();
   const navegar = useNavigate();
   const { termino, buscar, limpiar } = useBusqueda();
+  const { user, logout } = useAuth();
   const [texto, setTexto] = useState(termino);
   const retrasoRef = useRef();
 
@@ -65,6 +67,9 @@ const Encabezado = () => {
           </svg>
           <span className="hidden sm:inline">{t("inicio")}</span>
         </button>
+        {user && (
+          <span className="text-sm text-slate-300 hidden sm:block">Bienvenido <span className="text-white font-semibold">{user.name}</span></span>
+        )}
 
         <form onSubmit={manejarEnvio} className="flex-1 max-w-full sm:max-w-md">
           <input
@@ -116,6 +121,44 @@ const Encabezado = () => {
             </svg>
             <span className="hidden sm:inline">{t("favoritos")}</span>
           </button>
+
+          {user?.role === "admin" && (
+            <button
+              onClick={() => navegar("/admin")}
+              className="flex items-center gap-2 text-slate-200 hover:text-green-400 font-semibold transition-colors"
+            >
+              <svg className="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              <span className="hidden sm:inline">Admin</span>
+            </button>
+          )}
+
+          <a href={`${BASE_URL}/api-docs/`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-slate-200 hover:text-blue-400 font-semibold transition-colors">
+            <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <span className="hidden sm:inline">API Docs</span>
+          </a>
+
+          {user ? (
+            <div className="flex items-center gap-3">
+              <button
+                onClick={logout}
+                className="text-sm px-3 py-1.5 rounded-lg border border-red-500/50 text-red-400 hover:bg-red-500/10 hover:border-red-400 transition-colors"
+              >
+                Salir
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => navegar("/login")}
+              className="flex items-center gap-1 text-sm text-blue-400 hover:text-blue-300 font-semibold transition-colors"
+            >
+              Ingresar
+            </button>
+          )}
         </div>
       </div>
     </header>

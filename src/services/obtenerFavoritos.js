@@ -1,33 +1,30 @@
-import { API_BASE_URL, imagenUrl } from "../config";
+import { BASE_URL } from "../config";
+import { mapearPelicula } from "../utils/mapearPelicula";
+import { getCache, setCache, clearCache } from "../utils/cache";
 
-const mapearPelicula = (p) => ({
-  imdbID: String(p.Id),
-  Title: p.Title,
-  Year: p.Year,
-  Poster: imagenUrl(p.Poster),
-  imdbRating: String(p.imdbRating),
-  Runtime: String(p.Runtime),
-  Director: p.Director,
-  Plot: p.Plot,
-  Images: [imagenUrl(p.Images)],
-  Actors: p.Actors,
-  Type: p.Type || "movie",
-  Genre: p.Genre || "N/A",
-  Trailer: p.Trailer || null,
-});
+function getToken() {
+  return localStorage.getItem("token");
+}
 
 export const obtenerFavoritosAPI = async () => {
-  try {
-    const url = new URL(API_BASE_URL);
-    url.pathname += "/favoritas";
-    url.searchParams.append("idUsuario", "1");
+  const cacheKey = "favoritos";
+  const cached = getCache(cacheKey);
+  if (cached) return cached;
 
-    const respuesta = await fetch(url);
+  const token = getToken();
+  if (!token) return [];
+
+  try {
+    const respuesta = await fetch(`${BASE_URL}/api/favoritos`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
     if (!respuesta.ok) throw new Error(`Error HTTP: ${respuesta.status}`);
 
     const datos = await respuesta.json();
     if (datos?.status === "success" && Array.isArray(datos?.data)) {
-      return datos.data.map((fav) => mapearPelicula(fav.pelicula));
+      const resultado = datos.data.map((fav) => mapearPelicula(fav.movie));
+      setCache(cacheKey, resultado, 60 * 1000);
+      return resultado;
     }
     return [];
   } catch (error) {
@@ -37,18 +34,21 @@ export const obtenerFavoritosAPI = async () => {
 };
 
 export const toggleFavoritoAPI = async (pelicula) => {
-  try {
-    const url = new URL(API_BASE_URL);
-    url.pathname += `/${pelicula.imdbID}/favorito`;
+  const token = getToken();
+  if (!token) return null;
 
-    const respuesta = await fetch(url, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ idUsuario: 1 }),
+  try {
+    const respuesta = await fetch(`${BASE_URL}/api/favoritos/${pelicula.Id}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
     });
     if (!respuesta.ok) throw new Error(`Error HTTP: ${respuesta.status}`);
 
     const datos = await respuesta.json();
+    clearCache("favoritos");
     return datos?.esFavorito ?? false;
   } catch (error) {
     console.error("Error al alternar favorito:", error);

@@ -10,15 +10,17 @@ const Inicio = () => {
   const { t, i18n } = useTranslation();
   const { termino } = useBusqueda();
   const [peliculas, setPeliculas] = useState([]);
-  const [pagina, setPagina] = useState(1);
+  const [cursor, setCursor] = useState(null);
   const [hayMas, setHayMas] = useState(true);
   const [cargando, setCargando] = useState(false);
   const [genero, setGenero] = useState(null);
   const [tipo, setTipo] = useState(null);
-  const paginaRef = useRef(pagina);
+  const cursorRef = useRef(cursor);
   const terminoRef = useRef(termino);
   const idiomaRef = useRef(i18n.language);
-  const paginasCargadas = useRef(new Set());
+  const cursorsCargados = useRef(new Set());
+  const cargaInicial = useRef(false);
+  const abortRef = useRef(null);
 
   const generosUnicos = useMemo(() => {
     const set = new Set();
@@ -43,29 +45,30 @@ const Inicio = () => {
   }, [peliculas, genero, tipo]);
 
   useEffect(() => {
-    paginaRef.current = pagina;
-  }, [pagina]);
+    cursorRef.current = cursor;
+  }, [cursor]);
 
   useEffect(() => {
     if (i18n.language !== idiomaRef.current) {
       setPeliculas([]);
-      setPagina(1);
+      setCursor(null);
       setHayMas(true);
       setCargando(false);
       setGenero(null);
-      paginasCargadas.current = new Set();
+      cursorsCargados.current = new Set();
       idiomaRef.current = i18n.language;
     }
   }, [i18n.language]);
 
   useEffect(() => {
     if (termino !== terminoRef.current) {
+      abortRef.current?.abort();
       setPeliculas([]);
-      setPagina(1);
+      setCursor(null);
       setHayMas(true);
       setCargando(false);
       setGenero(null);
-      paginasCargadas.current = new Set();
+      cursorsCargados.current = new Set();
       terminoRef.current = termino;
     }
   }, [termino]);
@@ -73,28 +76,31 @@ const Inicio = () => {
   const cargarMas = useCallback(async () => {
     if (cargando || !hayMas) return;
 
-    const pagActual = paginaRef.current;
-    if (paginasCargadas.current.has(pagActual)) return;
-    paginasCargadas.current.add(pagActual);
+    const cursorActual = cursorRef.current;
+    const key = cursorActual ?? 0;
+    if (cursorsCargados.current.has(key)) return;
+    cursorsCargados.current.add(key);
+
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
 
     setCargando(true);
 
     const terminoActual = termino;
-    const nuevas = await obtenerTodasLasPeliculas(pagActual, terminoActual);
+    const resultado = await obtenerTodasLasPeliculas(cursorActual, terminoActual, controller.signal);
 
     if (terminoActual !== terminoRef.current) return;
 
-    if (nuevas.length === 0) {
-      setHayMas(false);
-    }
-
-    setPeliculas((prev) => [...prev, ...nuevas]);
-    setPagina((prev) => prev + 1);
+    setPeliculas((prev) => [...prev, ...resultado.data]);
+    setCursor(resultado.nextCursor);
+    setHayMas(resultado.nextCursor !== null);
     setCargando(false);
   }, [cargando, hayMas, termino]);
 
   useEffect(() => {
-    if (peliculas.length === 0 && !cargando && hayMas) {
+    if (!cargaInicial.current && peliculas.length === 0 && !cargando && hayMas) {
+      cargaInicial.current = true;
       cargarMas();
     }
   }, [peliculas.length, cargando, hayMas, cargarMas]);
