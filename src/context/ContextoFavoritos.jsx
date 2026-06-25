@@ -11,6 +11,7 @@ import {
   toggleFavoritoAPI,
 } from "../services/obtenerFavoritos";
 import { useAuth } from "./AuthContext";
+import { clearCache } from "../utils/cache";
 
 const ContextoFavoritos = createContext();
 
@@ -28,11 +29,14 @@ export const ProveedorFavoritos = ({ children }) => {
   const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
+    clearCache("favoritos");
     const cargarFavoritos = async () => {
       setCargando(true);
       const datosAPI = await obtenerFavoritosAPI();
       if (datosAPI !== null) {
         setFavoritos(datosAPI);
+      } else if (!user) {
+        setFavoritos([]);
       }
       setCargando(false);
     };
