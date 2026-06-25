@@ -24,7 +24,7 @@ export const useFavoritos = () => {
 };
 
 export const ProveedorFavoritos = ({ children }) => {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const [favoritos, setFavoritos] = useState([]);
   const [cargando, setCargando] = useState(true);
 
@@ -35,13 +35,13 @@ export const ProveedorFavoritos = ({ children }) => {
       const datosAPI = await obtenerFavoritosAPI();
       if (datosAPI !== null) {
         setFavoritos(datosAPI);
-      } else if (!user) {
+      } else if (!token) {
         setFavoritos([]);
       }
       setCargando(false);
     };
     cargarFavoritos();
-  }, [user]);
+  }, [token]);
 
   const esFavorito = useCallback(
     (id) => favoritos.some((p) => p.Id === id),
