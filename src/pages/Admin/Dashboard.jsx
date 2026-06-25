@@ -1,9 +1,18 @@
 import { useState, useEffect, useCallback } from "react";
 import { API_BASE_URL } from "../../config";
+import { useAuth } from "../../context/AuthContext";
 
 const BASE = API_BASE_URL.replace("/api/peliculas", "");
 
+function headers(token) {
+  return {
+    "Content-Type": "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
+}
+
 export default function Dashboard() {
+  const { token } = useAuth();
   const [usuarios, setUsuarios] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
@@ -13,15 +22,16 @@ export default function Dashboard() {
 
   const cargarUsuarios = useCallback(async () => {
     try {
-      const res = await fetch(`${BASE}/api/admin/users`);
+      const res = await fetch(`${BASE}/api/admin/users`, { headers: headers(token) });
+      if (!res.ok) { setUsuarios([]); return; }
       const data = await res.json();
-      setUsuarios(data);
+      setUsuarios(Array.isArray(data) ? data : []);
     } catch (e) {
       console.error("Error al cargar usuarios", e);
     } finally {
       setCargando(false);
     }
-  }, []);
+  }, [token]);
 
   useEffect(() => { cargarUsuarios(); }, [cargarUsuarios]);
 
@@ -53,13 +63,13 @@ export default function Dashboard() {
         if (form.password) payload.password = form.password;
         await fetch(`${BASE}/api/admin/users/${editando.Id}`, {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
+          headers: headers(token),
           body: JSON.stringify(payload),
         });
       } else {
         await fetch(`${BASE}/api/admin/users`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: headers(token),
           body: JSON.stringify(form),
         });
       }
@@ -73,7 +83,7 @@ export default function Dashboard() {
   const eliminar = async (id) => {
     if (!confirm("¿Eliminar este usuario?")) return;
     try {
-      await fetch(`${BASE}/api/admin/users/${id}`, { method: "DELETE" });
+      await fetch(`${BASE}/api/admin/users/${id}`, { method: "DELETE", headers: headers(token) });
       cargarUsuarios();
     } catch (e) {
       console.error("Error al eliminar", e);

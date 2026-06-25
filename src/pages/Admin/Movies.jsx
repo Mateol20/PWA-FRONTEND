@@ -1,8 +1,16 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { API_BASE_URL } from "../../config";
+import { useAuth } from "../../context/AuthContext";
 
 const BASE = API_BASE_URL.replace("/api/peliculas", "");
+
+function headers(token) {
+  return {
+    "Content-Type": "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
+}
 
 const FIELDS = [
   { key: "Title", label: "Título", type: "text", required: true },
@@ -23,6 +31,7 @@ const emptyForm = () => Object.fromEntries(FIELDS.map((f) => [f.key, ""]));
 
 export default function Movies() {
   const navigate = useNavigate();
+  const { token } = useAuth();
   const [peliculas, setPeliculas] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
@@ -32,15 +41,16 @@ export default function Movies() {
 
   const cargarPeliculas = useCallback(async () => {
     try {
-      const res = await fetch(`${BASE}/api/admin/movies`);
+      const res = await fetch(`${BASE}/api/admin/movies`, { headers: headers(token) });
+      if (!res.ok) { setPeliculas([]); return; }
       const data = await res.json();
-      setPeliculas(data);
+      setPeliculas(Array.isArray(data) ? data : []);
     } catch (e) {
       console.error("Error al cargar películas", e);
     } finally {
       setCargando(false);
     }
-  }, []);
+  }, [token]);
 
   useEffect(() => { cargarPeliculas(); }, [cargarPeliculas]);
 
@@ -75,13 +85,13 @@ export default function Movies() {
       if (editando) {
         await fetch(`${BASE}/api/admin/movies/${editando.Id}`, {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
+          headers: headers(token),
           body: JSON.stringify(payload),
         });
       } else {
         await fetch(`${BASE}/api/admin/movies`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: headers(token),
           body: JSON.stringify(payload),
         });
       }
@@ -95,7 +105,7 @@ export default function Movies() {
   const eliminar = async (id) => {
     if (!confirm("¿Eliminar esta película?")) return;
     try {
-      await fetch(`${BASE}/api/admin/movies/${id}`, { method: "DELETE" });
+      await fetch(`${BASE}/api/admin/movies/${id}`, { method: "DELETE", headers: headers(token) });
       cargarPeliculas();
     } catch (e) {
       console.error("Error al eliminar", e);

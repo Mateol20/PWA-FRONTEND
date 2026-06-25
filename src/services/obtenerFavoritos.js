@@ -1,18 +1,23 @@
-import { API_BASE_URL } from "../config";
+import { BASE_URL } from "../config";
 import { mapearPelicula } from "../utils/mapearPelicula";
 import { getCache, setCache, clearCache } from "../utils/cache";
+
+function getToken() {
+  return localStorage.getItem("token");
+}
 
 export const obtenerFavoritosAPI = async () => {
   const cacheKey = "favoritos";
   const cached = getCache(cacheKey);
   if (cached) return cached;
 
-  try {
-    const url = new URL(API_BASE_URL);
-    url.pathname += "/favoritas";
-    url.searchParams.append("idUsuario", "1");
+  const token = getToken();
+  if (!token) return [];
 
-    const respuesta = await fetch(url);
+  try {
+    const respuesta = await fetch(`${BASE_URL}/api/favoritos`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
     if (!respuesta.ok) throw new Error(`Error HTTP: ${respuesta.status}`);
 
     const datos = await respuesta.json();
@@ -29,14 +34,16 @@ export const obtenerFavoritosAPI = async () => {
 };
 
 export const toggleFavoritoAPI = async (pelicula) => {
-  try {
-    const url = new URL(API_BASE_URL);
-    url.pathname += `/${pelicula.Id}/favorito`;
+  const token = getToken();
+  if (!token) return null;
 
-    const respuesta = await fetch(url, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ idUsuario: 1 }),
+  try {
+    const respuesta = await fetch(`${BASE_URL}/api/favoritos/${pelicula.Id}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
     });
     if (!respuesta.ok) throw new Error(`Error HTTP: ${respuesta.status}`);
 
