@@ -10,6 +10,7 @@ import {
   obtenerFavoritosAPI,
   toggleFavoritoAPI,
 } from "../services/obtenerFavoritos";
+import { useAuth } from "./AuthContext";
 
 const ContextoFavoritos = createContext();
 
@@ -22,11 +23,13 @@ export const useFavoritos = () => {
 };
 
 export const ProveedorFavoritos = ({ children }) => {
+  const { user } = useAuth();
   const [favoritos, setFavoritos] = useState([]);
   const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
     const cargarFavoritos = async () => {
+      setCargando(true);
       const datosAPI = await obtenerFavoritosAPI();
       if (datosAPI !== null) {
         setFavoritos(datosAPI);
@@ -34,7 +37,7 @@ export const ProveedorFavoritos = ({ children }) => {
       setCargando(false);
     };
     cargarFavoritos();
-  }, []);
+  }, [user]);
 
   const esFavorito = useCallback(
     (id) => favoritos.some((p) => p.Id === id),
